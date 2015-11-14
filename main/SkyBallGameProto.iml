@@ -3,11 +3,16 @@
   <component name="FlexBuildConfigurationManager" active="SkyBallGameProto">
     <configurations>
       <configuration name="SkyBallGameProto" target-platform="Desktop" pure-as="true" main-class="Main" output-file="Main.swf" output-folder="$MODULE_DIR$/out/production/SkyBallGameProto">
-        <dependencies target-player="19.0">
+        <dependencies>
+          <entries>
+            <entry library-id="59381965-0163-4a0e-9087-3826821fef51">
+              <dependency linkage="Merged" />
+            </entry>
+          </entries>
           <sdk name="AIRSDK_Compiler" />
         </dependencies>
         <compiler-options />
-        <packaging-air-desktop package-file-name="Main" />
+        <packaging-air-desktop package-file-name="SkyBallGameProto" />
         <packaging-android />
         <packaging-ios />
       </configuration>
@@ -21,5 +26,16 @@
     </content>
     <orderEntry type="jdk" jdkName="AIRSDK_Compiler" jdkType="Flex SDK Type (new)" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="59381965-0163-4a0e-9087-3826821fef51" />
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../libs" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../libs" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
