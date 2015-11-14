@@ -84,6 +84,7 @@ package com.game.network
 				case "NetGroup.Connect.Rejected":
 				case "NetGroup.Connect.Failed":
 				{
+					NResponder.dispatch( CirrusEvents.CONNECTION_ERROR );
 					break;
 				}
 			}
@@ -91,7 +92,7 @@ package com.game.network
 
 		private function connectionSuccess_Handler() : void
 		{
-			Log.add( '[Connection success:' );
+			Log.add( '[Connection info]' );
 			Log.add( '[nearID :' + directNetConnection.nearID + ']' );
 			Log.add( '[farID  :' + directNetConnection.farID + ']' );
 
@@ -103,6 +104,7 @@ package com.game.network
 		private function onError( e : ErrorEvent ) : void
 		{
 			Log.add( e );
+			NResponder.dispatch( CirrusEvents.CONNECTION_ERROR );
 		}
 
 		public function createNetStreem( leftPeerID : String, rightPeerID : String ) : void
@@ -128,6 +130,11 @@ package com.game.network
 
 			 rightPlayerStream.play("rightPlayerData");
 			 rightPlayerStream.client = new GameClient();*/
+		}
+
+		public function get peerID() : String
+		{
+			return mPeerID;
 		}
 	}
 }
