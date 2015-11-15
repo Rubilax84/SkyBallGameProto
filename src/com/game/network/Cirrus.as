@@ -6,12 +6,17 @@ package com.game.network
 
 	import appkit.responders.NResponder;
 
+	import flash.display.Sprite;
 	import flash.events.AsyncErrorEvent;
 	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.NetConnection;
+	import flash.net.NetStream;
+	import flash.utils.clearInterval;
+	import flash.utils.setInterval;
 
 	import utils.Log;
 
@@ -21,6 +26,8 @@ package com.game.network
 		private var cirrusKey : String;
 		private var directNetConnection : NetConnection;
 		private var mPeerID : String;
+		private var outStream : NetStream;
+		private var receiveStream : NetStream;
 
 		public function Cirrus( devKey : String )
 		{
@@ -59,31 +66,12 @@ package com.game.network
 					connectionSuccess_Handler();
 					break;
 				}
-				case "NetGroup.Connect.Success":
-				{
-					break;
-				}
-				case "NetGroup.Neighbor.Disconnect":
-				{
-					break;
-				}
-				case "NetGroup.SendTo.Notify":
-				{
-					break;
-				}
-				case "NetGroup.Posting.Notify":
-				{
-					break;
-				}
-				case "NetGroup.Neighbor.Connect":
-				{
-					break;
-				}
 				case "NetConnection.Connect.Failed":
 				case "NetConnection.Connect.IdleTimeout":
 				case "NetGroup.Connect.Rejected":
 				case "NetGroup.Connect.Failed":
 				{
+					Log.add( event.info.code );
 					NResponder.dispatch( CirrusEvents.CONNECTION_ERROR );
 					break;
 				}
@@ -93,12 +81,50 @@ package com.game.network
 		private function connectionSuccess_Handler() : void
 		{
 			Log.add( '[Connection info]' );
-			Log.add( '[nearID :' + directNetConnection.nearID + ']' );
-			Log.add( '[farID  :' + directNetConnection.farID + ']' );
+			Log.add( 'nearID :' + directNetConnection.nearID );
+			Log.add( 'farID  :' + directNetConnection.farID );
 
 			mPeerID = directNetConnection.nearID;
 
+			NResponder.add( PeersServerEvents.WAITING_FOR_RIVAL, waitingForRival );
+			NResponder.add( PeersServerEvents.RIVAL_PEER_RECEIVE, onRivalPeerReceived );
+
 			NResponder.dispatch( CirrusEvents.CONNECTION_SUCCESS );
+		}
+
+		private function waitingForRival() : void
+		{
+			Log.add( 'waitingForRival...' );
+
+			outStream = new NetStream( directNetConnection, NetStream.DIRECT_CONNECTIONS );
+			outStream.addEventListener( NetStatusEvent.NET_STATUS, sendStream_netStatusHandler );
+			outStream.publish( "live" );
+
+			var outStreamClient : Object = {};
+			outStreamClient.onPeerConnect = function ( subscriber : NetStream ) : Boolean
+			{
+				Log.add( 'Connected peer id: ' + subscriber.farID );
+				return true;
+			};
+
+			outStream.client = outStreamClient;
+			directNetConnection.client = outStreamClient;
+
+			var s : Sprite = new Sprite();
+			s.addEventListener( Event.ENTER_FRAME, s_enterFrameHandler );
+		}
+
+		private function onRivalPeerReceived( data : Object ) : void
+		{
+			Log.add( 'RivalPeerReceived...' );
+
+			receiveStream = new NetStream( directNetConnection, data.rival );
+			receiveStream.addEventListener( NetStatusEvent.NET_STATUS, sendStream_netStatusHandler );
+
+			receiveStream.play("live");
+
+			receiveStream.client = new Client();
+
 		}
 
 		private function onError( e : ErrorEvent ) : void
@@ -109,8 +135,8 @@ package com.game.network
 
 		public function createNetStreem( leftPeerID : String, rightPeerID : String ) : void
 		{
-			/*sendStream = new NetStream(directNetConnection, NetStream.DIRECT_CONNECTIONS);
-			 sendStream.publish("gameData");
+			/*outStream = new NetStream(directNetConnection, NetStream.DIRECT_CONNECTIONS);
+			 outStream.publish("gameData");
 
 			 var client:Object = {};
 
@@ -119,7 +145,7 @@ package com.game.network
 			 return true;
 			 };
 
-			 sendStream.client = client;
+			 outStream.client = client;
 
 			 leftPlayerStream = new NetStream(directNetConnection, leftPeerID);
 
@@ -135,6 +161,19 @@ package com.game.network
 		public function get peerID() : String
 		{
 			return mPeerID;
+		}
+
+		private function sendStream_netStatusHandler( event : NetStatusEvent ) : void
+		{
+			Log.add( JSON.stringify( event.info ) );
+		}
+
+		private function s_enterFrameHandler( event : Event ) : void
+		{
+			if ( outStream )
+			{
+				outStream.send( 'live', 1 );
+			}
 		}
 	}
 }

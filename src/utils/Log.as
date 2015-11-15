@@ -13,8 +13,33 @@ package utils
 	public class Log
 	{
 		private static var tfDebug : TextField;
+		private static var mStage : Stage;
 
 		public static function init( stage : Stage ) : void
+		{
+			mStage = stage;
+			initTextField();
+		}
+
+		public static function show() : void
+		{
+			if ( !tfDebug.parent ) mStage.addChild( tfDebug );
+		}
+
+		public static function hide() : void
+		{
+			if ( tfDebug.parent ) mStage.removeChild( tfDebug );
+		}
+
+		public static function add( text : * ) : void
+		{
+			if ( !tfDebug ) throw new Error('Please init Log first!');
+
+			tfDebug.appendText( text + "\n" );
+			tfDebug.scrollV = tfDebug.maxScrollV;
+		}
+
+		private static function initTextField() : void
 		{
 			tfDebug = new TextField();
 			tfDebug.selectable = true;
@@ -28,14 +53,7 @@ package utils
 			tfDebug.height = 380;
 			tfDebug.background = false;
 			tfDebug.border = false;
-
-			stage.addChild( tfDebug );
 		}
 
-		public static function add( text : * ) : void
-		{
-			tfDebug.appendText( text + "\n" );
-			tfDebug.scrollV = tfDebug.maxScrollV;
-		}
 	}
 }

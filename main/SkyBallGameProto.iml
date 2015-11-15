@@ -16,6 +16,26 @@
         <packaging-android />
         <packaging-ios />
       </configuration>
+      <configuration name="Android" target-platform="Mobile" pure-as="true" main-class="Main" output-file="Android.swf" output-folder="$MODULE_DIR$/out/production/SkyBallGameProto">
+        <dependencies>
+          <entries>
+            <entry library-id="6032e20d-7814-4ef4-b054-f00fe774126f">
+              <dependency linkage="Merged" />
+            </entry>
+          </entries>
+          <sdk name="AIRSDK_Compiler" />
+        </dependencies>
+        <compiler-options>
+          <map>
+            <entry key="compiler.debug.swf" value="true" />
+          </map>
+        </compiler-options>
+        <packaging-air-desktop />
+        <packaging-android enabled="true" use-generated-descriptor="false" custom-descriptor-path="$MODULE_DIR$/../Main-app.xml" package-file-name="SkyBallProto">
+          <AirSigningOptions arch="x86" />
+        </packaging-android>
+        <packaging-ios package-file-name="Android" />
+      </configuration>
     </configurations>
     <compiler-options />
   </component>
@@ -29,6 +49,17 @@
     <orderEntry type="module-library" exported="">
       <library type="flex">
         <properties id="59381965-0163-4a0e-9087-3826821fef51" />
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../libs" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../libs" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="6032e20d-7814-4ef4-b054-f00fe774126f" />
         <CLASSES>
           <root url="file://$MODULE_DIR$/../libs" />
         </CLASSES>

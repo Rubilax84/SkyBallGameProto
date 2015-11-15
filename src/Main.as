@@ -1,7 +1,11 @@
 package
 {
 
+	import appkit.responders.NResponder;
+
 	import com.game.network.Cirrus;
+	import com.game.network.CirrusEvents;
+	import com.game.network.PeersServer;
 
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -12,6 +16,9 @@ package
 
 	public class Main extends Sprite
 	{
+		private var cirrus : Cirrus;
+		private var peerServer : PeersServer;
+
 		public function Main()
 		{
 			if ( stage ) addedToStageHandler( null );
@@ -27,8 +34,18 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 
-			var cirrus : Cirrus = new Cirrus( Config.CIRRUS_DEV_KEY );
+			NResponder.add( CirrusEvents.CONNECTION_SUCCESS, onCirrusConnect );
+
+			cirrus = new Cirrus( Config.CIRRUS_DEV_KEY );
 			cirrus.connect();
+
+			Log.show();
+		}
+
+		private function onCirrusConnect() : void
+		{
+			peerServer = new PeersServer();
+			peerServer.getRivalPeer( cirrus.peerID );
 		}
 	}
 }
